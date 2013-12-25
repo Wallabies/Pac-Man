@@ -50,9 +50,9 @@ public class Board {
 				//2 blocks surrounding
 				if (getSurroundingBlockNumber(ex, why) == 2) {
 					if (board[ex][why] == 4)
-						displayTexture(3, 2, ex, why, getOpenDirection(ex, why));
+						displayTexture(3, 2, ex, why, getOpposite(getClosedCorner(ex, why)));
 					else
-						displayTexture(board[ex][why], 2, ex, why, getOpenDirection(ex, why));
+						displayTexture(board[ex][why], 2, ex, why, getOpposite(getClosedCorner(ex, why)));
 				}
 				//3 blocks surrounding
 				else if (getSurroundingBlockNumber(ex, why) == 3) {
@@ -63,19 +63,24 @@ public class Board {
 				else if (getSurroundingBlockNumber(ex, why) == 4) {
 					if (getOpenCorner(ex, why) != 4) {
 						if (board[ex][why] == 3) //because this one is weird
-							displayTexture(board[ex][why], 3, ex, why, getOppositeFace(getOpenCorner(ex, why)));
+							displayTexture(board[ex][why], 3, ex, why, getOpposite(getOpenCorner(ex, why)));
 						else
-							displayTexture(board[ex][why], 2, ex, why, getOppositeFace(getOpenCorner(ex, why)));
+							displayTexture(board[ex][why], 2, ex, why, getOpposite(getOpenCorner(ex, why)));
 					}
 					//if its in the middle, and therefore should not be rendered
 					else
 						displayTexture(0, 1, ex, why, 0);
 				}
 
+				//doesn't meet any of the other cases
 				else
 					displayTexture(board[ex][why], 1, ex, why, 0);
 			}
 		}
+	}
+
+	public void removeCoinAt(int ex, int why) {
+		board[ex][why] = 0;
 	}
 
 	private void displayTexture(int textureX, int textureY, double boardX, double boardY, int face) {
@@ -104,7 +109,7 @@ public class Board {
 		}
 	}
 
-	private int getOppositeFace(int face) {
+	private int getOpposite(int face) {
 		if(face <= 1)
 			return face + 2;
 		return face - 2;
@@ -177,19 +182,7 @@ public class Board {
 		return num;
 	}
 
-	private int getOpenDirection(int ex, int why) {
-		if (board[ex - 1][why] < 3 && board[ex][why - 1] < 3)
-			return 0;
-		if (board[ex][why - 1] < 3 && board[ex + 1][why] < 3)
-			return 1;
-		if (board[ex + 1][why] < 3 && board[ex][why + 1] < 3)
-			return 2;
-		if (board[ex][why + 1] < 3 && board[ex - 1][why] < 3)
-			return 3;
-		return 0;
-	}
-
-	private int getOpenCorner(int ex, int why) {//it's a bit wonky, but it works
+	private int getOpenCorner(int ex, int why) {
 
 		try {
 			if (board[ex - 1][why - 1] < 3)
@@ -214,6 +207,37 @@ public class Board {
 
 		try {
 			if (board[ex - 1][why + 1] < 3)
+				return 3;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//do nothing
+		}
+		return 4;
+	}
+
+	private int getClosedCorner(int ex,int why) {
+		try {
+			if (board[ex - 1][why - 1] >= 3)
+				return 0;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//do nothing
+		}
+
+		try {
+			if (board[ex + 1][why - 1] >= 3)
+				return 1;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//do nothing
+		}
+
+		try {
+			if (board[ex + 1][why + 1] >= 3)
+				return 2;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			//do nothing
+		}
+
+		try {
+			if (board[ex - 1][why + 1] >= 3)
 				return 3;
 		} catch (ArrayIndexOutOfBoundsException e) {
 			//do nothing
