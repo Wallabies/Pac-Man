@@ -16,12 +16,16 @@ public class Board {
 	private byte[][] board;
 	private int apothem = 4;
 	private Texture texture;
+	private int coinBlinkCount;
+	private static double scaleFactor;
 
 	/**
 	 * Create a new Board
 	 */
 	public Board() {
 		board = new byte[28][31];
+		coinBlinkCount = 0;
+		scaleFactor = (double)Start.WINDOW_HEIGHT / (board[0].length * 8);
 		try {
 			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("pics/Textures.png"));
 		} catch (IOException e) {
@@ -48,6 +52,10 @@ public class Board {
 			}
 			line++;
 		}
+	}
+
+	public void update() {
+		coinBlinkCount++;
 	}
 
 	/**
@@ -95,7 +103,43 @@ public class Board {
 	 * @param why The y coordinate of the coin
 	 */
 	public void removeCoinAt(int ex, int why) {
-		board[ex][why] = 0;
+		try {
+			board[ex][why] = 0;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("Error: Unable to remove coin");
+		}
+	}
+
+	/**
+	 * Set the type of block at the given coordinates.
+	 * @param ex The x coordinate of the block to be changed
+	 * @param why The y coordinate of the block to be changed
+	 * @param type The type to set the block at the given coordinates
+	 */
+	public void setTypeAt(int ex, int why, byte type) {
+		try {
+			board[ex][why] = type;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("Error: Unable to set type");
+		}
+	}
+
+	/**
+	 * Give the x coordinate as if the point was located on the board.
+	 * @param ex The point to be evaluated
+	 * @return The parameter as if it was on the board
+	 */
+	public static int snapToBoardX(double ex) {
+		return (int)(ex / scaleFactor / 8);
+	}
+
+	/**
+	 * Give the y coordinate as if the point was located on the board.
+	 * @param why The point to be evaluated
+	 * @return The parameter as if it was on the board
+	 */
+	public static int snapToBoardY(double why) {
+		return 30 - snapToBoardX(why);
 	}
 
 	/**
@@ -109,7 +153,6 @@ public class Board {
 	 */
 	private void displayTexture(int textureX, int textureY, double boardX, double boardY, int rotation) {
 		if(textureX != 0 && textureX != 7) {
-			double scaleFactor = (double)Start.WINDOW_HEIGHT / (board[0].length * 8);
 			double newApothem = apothem * scaleFactor;
 			double numX = (double)(textureX - 1) / 8;
 			double numY = (double)(textureY - 1) / 8;
