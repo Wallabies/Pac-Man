@@ -5,6 +5,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 import java.io.File;
+
+import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
@@ -18,6 +20,7 @@ public class Board {
 	private Texture texture;
 	private int coinBlinkCount;
 	private static double scaleFactor;
+	private static int blinkRate = 15;
 
 	/**
 	 * Create a new Board
@@ -56,6 +59,8 @@ public class Board {
 
 	public void update() {
 		coinBlinkCount++;
+		if (coinBlinkCount >= blinkRate * 2)
+			coinBlinkCount = 0;
 	}
 
 	/**
@@ -90,8 +95,14 @@ public class Board {
 				}
 
 				//doesn't meet any of the other cases
-				else
-					displayTexture(board[ex][why], 1, ex, why, 0);
+				else {
+					if (board[ex][why] == 2) {
+						if (coinBlinkCount <= blinkRate)
+							displayTexture(board[ex][why], 1, ex, why, 0);
+					}
+					else
+						displayTexture(board[ex][why], 1, ex, why, 0);
+				}
 			}
 		}
 	}
