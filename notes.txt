@@ -1,0 +1,18 @@
+Notes for your convenience:
+
+Data Types:
+	0  - Empty, completely blank, not important, just a place holder
+	1  - Small coin
+	2  - Large coin (energizer)
+	3  - Normal wall
+	4  - Border wall
+	5  - Cell wall
+	6  - Cell door
+	7  - Empty, but a solid block
+	8  - Tunnel, renders as empty
+	82 - 'R' character
+	69 - 'E' character
+	65 - 'A' character
+	68 - 'D' character
+	89 - 'Y' character
+	33 - '!' character
