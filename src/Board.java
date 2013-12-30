@@ -167,7 +167,7 @@ public class Board {
 	 */
 	public boolean isSolid(int ex, int why) {
 		try {
-			return board[ex][why] >= 3 && board[ex][why] < 20;
+			return board[ex][why] >= 3 && board[ex][why] < 20 && board[ex][why] != 8;
 		} catch (ArrayIndexOutOfBoundsException e) {
 			return true;
 		}
@@ -224,7 +224,7 @@ public class Board {
 	 * @param rotation The amount of rotation to apply to the image. Either 0, 1, 2, or 3
 	 */
 	private void displayTexture(double textureX, double textureY, double boardX, double boardY, int rotation) {
-		if(textureX != 0 && textureX != 7) {
+		if(textureX != 0 && textureX != 7 && textureX != 8) {
 			double newApothem = apothem * SCALE_FACTOR;
 			boardX = boardX * 8 * SCALE_FACTOR + newApothem;
 			boardY = boardY * 8 * SCALE_FACTOR + newApothem;
@@ -330,7 +330,6 @@ public class Board {
 		if (!isSolid(ex - 1, why))
 			num = 3;
 
-
 		return num;
 	}
 
@@ -410,7 +409,7 @@ public class Board {
 
 		//direction 3
 		if (board[ex - 1][why] == type)
-			return true; //3
+			return true;
 
 		return false;
 	}
