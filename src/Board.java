@@ -14,20 +14,31 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Board {
 
+	private static final int WIDTH = 28;
+	private static final int HEIGHT = 31;
+
+	public static final int FACE_UP = 0;
+	public static final int FACE_RIGHT = 1;
+	public static final int FACE_DOWN = 2;
+	public static final int FACE_LEFT = 3;
+
+	private static final double SCALE_FACTOR = (double)Start.WINDOW_HEIGHT / (HEIGHT * 8);
+
 	private byte[][] board;
-	private int apothem = 4;
+	private int apothem;
 	private Texture texture;
 	private int coinBlinkCount;
-	private static double scaleFactor;
-	private static int blinkRate = 15;
+	private int blinkRate;
 
 	/**
 	 * Create a new Board
 	 */
 	public Board() {
-		board = new byte[28][31];
+		board = new byte[WIDTH][HEIGHT];
+		apothem = 4;
 		coinBlinkCount = 0;
-		scaleFactor = (double)Start.WINDOW_HEIGHT / (board[0].length * 8);
+		blinkRate = 10;
+
 		try {
 			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("pics/Textures.png"));
 		} catch (IOException e) {
@@ -60,6 +71,9 @@ public class Board {
 		}
 	}
 
+	/**
+	 * Update the board.
+	 */
 	public void update() {
 		coinBlinkCount++;
 		if (coinBlinkCount >= blinkRate * 2)
@@ -70,8 +84,8 @@ public class Board {
 	 * Display the board with its current contents.
 	 */
 	public void display() {
-		for (int why = 0; why < board[0].length; why++) {
-			for (int ex = 0; ex < board.length; ex++) {
+		for (int why = 0; why < HEIGHT; why++) {
+			for (int ex = 0; ex < WIDTH; ex++) {
 				//one of the letters or special characters
 				if (board[ex][why] > 20)
 					displayTexture(1, board[ex][why], ex, why, 0);
@@ -114,20 +128,6 @@ public class Board {
 	}
 
 	/**
-	 * Remove coin at the given coordinates.
-	 * This sets the slot the coin was in to value 0
-	 * @param ex The x coordinate of the coin
-	 * @param why The y coordinate of the coin
-	 */
-	public void removeCoinAt(int ex, int why) {
-		try {
-			board[ex][why] = 0;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			System.out.println("Error: Unable to remove coin");
-		}
-	}
-
-	/**
 	 * Set the type of block at the given coordinates.
 	 * @param ex The x coordinate of the block to be changed
 	 * @param why The y coordinate of the block to be changed
@@ -146,8 +146,8 @@ public class Board {
 	 * @param ex The point to be evaluated
 	 * @return The parameter as if it was on the board
 	 */
-	public static int snapToBoardX(double ex) {
-		return (int)(ex / scaleFactor / 8);
+	public static int snapScreenPointToBoardX(double ex) {
+		return (int)(ex / SCALE_FACTOR / 8);
 	}
 
 	/**
@@ -155,8 +155,8 @@ public class Board {
 	 * @param why The point to be evaluated
 	 * @return The parameter as if it was on the board
 	 */
-	public static int snapToBoardY(double why) {
-		return 30 - snapToBoardX(why);
+	public static int snapScreenPointToBoardY(double why) {
+		return HEIGHT - 1 - snapScreenPointToBoardX(why);
 	}
 
 	/**
@@ -174,6 +174,47 @@ public class Board {
 	}
 
 	/**
+	 * Gives the coordinates of a point a distance away from the given coordinates at a given face.
+	 * @param ex The initial x coordinate
+	 * @param why The initial y coordinate
+	 * @param distance The distance from the initial point
+	 * @param face The face to be used
+	 * @return The coordinates of the point distance away from the initial point at face
+	 */
+	public int[] getCoordinatesAt(int ex, int why, int distance, int face) {
+		switch (face) {
+			case FACE_UP: return new int[] {ex, why - distance};
+			case FACE_RIGHT: return new int[] {ex + distance, why};
+			case FACE_DOWN: return new int[] {ex, why + distance};
+			case FACE_LEFT: return new int[] {ex - distance, why};
+		}
+		return new int[0];
+	}
+
+	/**
+	 * For code testing purposes! Draws a box at the given coordinates.
+	 * @param ex The x coordinate of the given point
+	 * @param why The y coordinate of the given point
+	 */
+	public void drawBoxAt(double ex, double why) {
+		double newApothem = apothem * SCALE_FACTOR;
+		ex = ex * 8 * SCALE_FACTOR + newApothem;
+		why = why * 8 * SCALE_FACTOR + newApothem;
+
+		try {
+			GL11.glColor3d(1, 0, 0);
+			GL11.glBegin(GL11.GL_QUADS);
+				GL11.glVertex2d(ex - newApothem, why - newApothem);
+				GL11.glVertex2d(ex + newApothem, why - newApothem);
+				GL11.glVertex2d(ex + newApothem, why + newApothem);
+				GL11.glVertex2d(ex - newApothem, why + newApothem );
+			GL11.glEnd();
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("Unable to draw box.");
+		}
+	}
+
+	/**
 	 * Display a texture onto the board.
 	 * This displays a portion of the texture specified by the user onto a specified location of the board, also specified by the user.
 	 * @param textureX The x coordinate of the image on the texture
@@ -184,9 +225,9 @@ public class Board {
 	 */
 	private void displayTexture(double textureX, double textureY, double boardX, double boardY, int rotation) {
 		if(textureX != 0 && textureX != 7) {
-			double newApothem = apothem * scaleFactor;
-			boardX = boardX * 8 * scaleFactor + newApothem;
-			boardY = boardY * 8 * scaleFactor + newApothem;
+			double newApothem = apothem * SCALE_FACTOR;
+			boardX = boardX * 8 * SCALE_FACTOR + newApothem;
+			boardY = boardY * 8 * SCALE_FACTOR + newApothem;
 
 			if (textureY <= 8) {
 				textureX = (textureX - 1) / 8;

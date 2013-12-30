@@ -1,4 +1,3 @@
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 
 /**
@@ -22,7 +21,6 @@ public class Game {
 	 */
 	public void update() {
 		board.update();
-		//board.setTypeAt(Board.snapToBoardX(Mouse.getX()), Board.snapToBoardY(Mouse.getY()), (byte)0);
 	}
 
 	/**
@@ -30,6 +28,8 @@ public class Game {
 	 */
 	public void display() {
 		board.display();
+		int[] nums = board.getCoordinatesAt(Board.snapScreenPointToBoardX(Mouse.getX()), Board.snapScreenPointToBoardY(Mouse.getY()), 0, Board.FACE_UP);
+		board.drawBoxAt(nums[0], nums[1]);
 	}
 
 }
