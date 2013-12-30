@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.io.File;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
@@ -51,7 +50,11 @@ public class Board {
 		while (s.hasNextLine()) {
 			String str = s.nextLine();
 			for (int i = 0; i < str.length(); i++) {
-				board[i][line] = Byte.parseByte(String.valueOf(str.charAt(i)));
+				try {
+					board[i][line] = Byte.parseByte(String.valueOf(str.charAt(i)));
+				} catch (NumberFormatException e) {
+					board[i][line] = (byte)str.charAt(i);
+				}
 			}
 			line++;
 		}
@@ -69,8 +72,11 @@ public class Board {
 	public void display() {
 		for (int why = 0; why < board[0].length; why++) {
 			for (int ex = 0; ex < board.length; ex++) {
+				//one of the letters or special characters
+				if (board[ex][why] > 20)
+					displayTexture(1, board[ex][why], ex, why, 0);
 				//2 blocks surrounding
-				if (getSurroundingBlockNumber(ex, why) == 2) {
+				else if (getSurroundingBlockNumber(ex, why) == 2) {
 					if (board[ex][why] == 4)
 						displayTexture(3, 2, ex, why, getOpposite(getClosedCorner(ex, why)));
 					else
@@ -154,6 +160,20 @@ public class Board {
 	}
 
 	/**
+	 * Gives whether or not the block at the given coordinates is solid (wall, door, or out of bounds).
+	 * @param ex The x coordinate of the block to be evaluated
+	 * @param why The y coordinate of the block to be evaluated
+	 * @return True if the block is solid, false if it is not
+	 */
+	public boolean isSolid(int ex, int why) {
+		try {
+			return board[ex][why] >= 3 && board[ex][why] < 20;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			return true;
+		}
+	}
+
+	/**
 	 * Display a texture onto the board.
 	 * This displays a portion of the texture specified by the user onto a specified location of the board, also specified by the user.
 	 * @param textureX The x coordinate of the image on the texture
@@ -162,13 +182,28 @@ public class Board {
 	 * @param boardY The y coordinate to display the image on the board at
 	 * @param rotation The amount of rotation to apply to the image. Either 0, 1, 2, or 3
 	 */
-	private void displayTexture(int textureX, int textureY, double boardX, double boardY, int rotation) {
+	private void displayTexture(double textureX, double textureY, double boardX, double boardY, int rotation) {
 		if(textureX != 0 && textureX != 7) {
 			double newApothem = apothem * scaleFactor;
-			double numX = (double)(textureX - 1) / 8;
-			double numY = (double)(textureY - 1) / 8;
 			boardX = boardX * 8 * scaleFactor + newApothem;
 			boardY = boardY * 8 * scaleFactor + newApothem;
+
+			if (textureY <= 8) {
+				textureX = (textureX - 1) / 8;
+				textureY = (textureY - 1) / 8;
+			}
+			else {
+				switch ((int)textureY) {
+					case 82: textureY = 2; break;
+					case 69: textureY = 3; break;
+					case 65: textureY = 4; break;
+					case 68: textureY = 5; break;
+					case 89: textureY = 6; break;
+					case 33: textureY = 7; break;
+				}
+				textureX = 0;
+				textureY = (textureY - 1) / 8;
+			}
 
 			Color.white.bind();
 			texture.bind();
@@ -177,10 +212,10 @@ public class Board {
 				GL11.glRotated(rotation * 90, 0, 0, 1);
 				GL11.glTranslated(-boardX, -boardY, 0);
 				GL11.glBegin(GL11.GL_QUADS);
-					GL11.glTexCoord2d(0 + numX, 0 + numY);            GL11.glVertex2d(boardX - newApothem, boardY - newApothem);
-					GL11.glTexCoord2d(0.125 + numX, 0 + numY);        GL11.glVertex2d(boardX + newApothem, boardY - newApothem);
-					GL11.glTexCoord2d(0.125 + numX, 0.125 + numY);    GL11.glVertex2d(boardX + newApothem, boardY + newApothem);
-					GL11.glTexCoord2d(0 + numX, 0.125 + numY);        GL11.glVertex2d(boardX - newApothem, boardY + newApothem);
+					GL11.glTexCoord2d(0 + textureX, 0 + textureY);            GL11.glVertex2d(boardX - newApothem, boardY - newApothem);
+					GL11.glTexCoord2d(0.125 + textureX, 0 + textureY);        GL11.glVertex2d(boardX + newApothem, boardY - newApothem);
+					GL11.glTexCoord2d(0.125 + textureX, 0.125 + textureY);    GL11.glVertex2d(boardX + newApothem, boardY + newApothem);
+					GL11.glTexCoord2d(0 + textureX, 0.125 + textureY);        GL11.glVertex2d(boardX - newApothem, boardY + newApothem);
 				GL11.glEnd();
 			GL11.glPopMatrix();
 			getSurroundingBlockNumber(0, 0);
@@ -211,27 +246,19 @@ public class Board {
 		int count = 0;
 
 		//direction 0
-		if (why - 1 < 0)
-			count++;
-		else if (board[ex][why - 1] >= 3)
+		if (isSolid(ex, why - 1))
 			count++;
 
 		//direction 1
-		if (ex + 1 >= board.length)
-			count++;
-		else if (board[ex + 1][why] >= 3)
+		if (isSolid(ex + 1, why))
 			count++;
 
 		//direction 2
-		if (why + 1 >= board[0].length)
-			count++;
-		else if (board[ex][why + 1] >= 3)
+		if (isSolid(ex, why + 1))
 			count++;
 
 		//direction 3
-		if (ex - 1 < 0)
-			count++;
-		else if (board[ex - 1][why] >= 3)
+		if (isSolid(ex - 1, why))
 			count++;
 
 		return count;
@@ -246,33 +273,22 @@ public class Board {
 	private int getOpenFace(int ex, int why) {
 		int num = 0;
 
-		try {
-			if (board[ex][why - 1] < 3)
-				num = 0;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 0
+		if (!isSolid(ex, why - 1))
+			num = 0;
 
-		try {
-			if (board[ex + 1][why] < 3)
-				num = 1;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 1
+		if (!isSolid(ex + 1, why))
+			num = 1;
 
-		try {
-			if (board[ex][why + 1] < 3)
-				num = 2;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 2
+		if (!isSolid(ex, why + 1))
+			num = 2;
 
-		try {
-			if (board[ex - 1][why] < 3)
-				num = 3;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 3
+		if (!isSolid(ex - 1, why))
+			num = 3;
+
 
 		return num;
 	}
@@ -285,33 +301,22 @@ public class Board {
 	 */
 	private int getOpenCorner(int ex, int why) {
 
-		try {
-			if (board[ex - 1][why - 1] < 3)
-				return 0;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 0
+		if (!isSolid(ex - 1, why - 1))
+			return 0;
 
-		try {
-			if (board[ex + 1][why - 1] < 3)
-				return 1;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 1
+		if (!isSolid(ex + 1, why - 1))
+			return 1;
 
-		try {
-			if (board[ex + 1][why + 1] < 3)
-				return 2;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 2
+		if (!isSolid(ex + 1, why + 1))
+			return 2;
 
-		try {
-			if (board[ex - 1][why + 1] < 3)
-				return 3;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 3
+		if (!isSolid(ex - 1, why + 1))
+			return 3;
+
 		return 4;
 	}
 
@@ -322,33 +327,22 @@ public class Board {
 	 * @return The corner of the block that is not open
 	 */
 	private int getClosedCorner(int ex,int why) {
-		try {
-			if (board[ex - 1][why - 1] >= 3)
-				return 0;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 0
+		if (isSolid(ex - 1, why - 1))
+			return 0;
 
-		try {
-			if (board[ex + 1][why - 1] >= 3)
-				return 1;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 1
+		if (isSolid(ex + 1, why - 1))
+			return 1;
 
-		try {
-			if (board[ex + 1][why + 1] >= 3)
-				return 2;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 2
+		if (isSolid(ex + 1, why + 1))
+			return 2;
 
-		try {
-			if (board[ex - 1][why + 1] >= 3)
-				return 3;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 3
+		if (isSolid(ex - 1, why + 1))
+			return 3;
+
 		return 4;
 	}
 
@@ -360,33 +354,23 @@ public class Board {
 	 * @return If the given block is next to a block with the given type
 	 */
 	private boolean isNextTo(int ex, int why, int type) {
-		try {
-			if (board[ex][why - 1] == type)
-				return true;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
 
-		try {
-			if (board[ex + 1][why] == type)
-				return true;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 0
+		if (board[ex][why - 1] == type)
+			return true;
 
-		try {
-			if (board[ex][why + 1] == type)
-				return true;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 1
+		if (board[ex + 1][why] == type)
+			return true;
 
-		try {
-			if (board[ex - 1][why] == type)
-				return true; //3
-		} catch (ArrayIndexOutOfBoundsException e) {
-			//do nothing
-		}
+		//direction 2
+		if (board[ex][why + 1] == type)
+			return true;
+
+		//direction 3
+		if (board[ex - 1][why] == type)
+			return true; //3
+
 		return false;
 	}
 }

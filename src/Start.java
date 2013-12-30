@@ -8,9 +8,9 @@ public class Start {
 	public static final int WINDOW_WIDTH = 800;
 	public static final int WINDOW_HEIGHT = 600;
 
-	public static void main (String[] args) {
+ 	public static void main (String[] args) {
 
-		try {
+	    try {
 			Display.setDisplayMode(new DisplayMode(WINDOW_WIDTH, WINDOW_HEIGHT));
 			Display.create();
 			Display.setVSyncEnabled(true);
