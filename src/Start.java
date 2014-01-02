@@ -9,12 +9,6 @@ public class Start {
 	public static final int WINDOW_HEIGHT = 600;
 
  	public static void main (String[] args) {
-	    System.out.println((byte)'R');
-	    System.out.println((byte)'E');
-	    System.out.println((byte)'A');
-	    System.out.println((byte)'D');
-	    System.out.println((byte)'Y');
-	    System.out.println((byte)'!');
 
 	    try {
 			Display.setDisplayMode(new DisplayMode(WINDOW_WIDTH, WINDOW_HEIGHT));
