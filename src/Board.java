@@ -37,7 +37,7 @@ public class Board {
 		board = new byte[WIDTH][HEIGHT];
 		apothem = 4;
 		coinBlinkCount = 0;
-		blinkRate = 10;
+		blinkRate = 8;
 
 		try {
 			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("pics/Textures.png"));
