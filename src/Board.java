@@ -306,7 +306,7 @@ public class Board {
 	}
 
 	/**
-	 * Gives the face of the given block that is not a wall, out of bounds, or data value 7.
+	 * Gives the face of the given block that is not a solid block.
 	 * @param ex The x coordinate of the block to be evaluated
 	 * @param why The y coordinate of the block to be evaluated
 	 * @return The face of the given block that is open
@@ -334,7 +334,7 @@ public class Board {
 	}
 
 	/**
-	 * Gives the corner of the given block that is not a wall, out of bounds, or data value 7.
+	 * Gives the corner of the given block that is not a solid block.
 	 * @param ex The x coordinate of the block to be evaluated
 	 * @param why The y coordinate of the block to be evaluated
 	 * @return The corner of the given block that is open
@@ -361,7 +361,7 @@ public class Board {
 	}
 
 	/**
-	 * Gives the corner of the given block that is a wall, out of bounds, or data value 7.
+	 * Gives the corner of the given block that is a solid block.
 	 * @param ex The x coordinate of the block to be evaluated
 	 * @param why The y coordinate of the block to be evaluated
 	 * @return The corner of the block that is not open
@@ -387,7 +387,7 @@ public class Board {
 	}
 
 	/**
-	 * Checks if a block of a certain type is next to the block at the given coordinates
+	 * Checks if a block of a certain type is next to the block at the given coordinates.
 	 * @param ex The x coordinate of the block to be evaluated
 	 * @param why The y coordinate of the block to be evaluated
 	 * @param type The type of the block that is being checked for
