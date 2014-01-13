@@ -3,4 +3,8 @@
  */
 public class Blinky extends Ghost {
 
+	public Blinky(double ex, double why) {
+		super(0, ex, why);
+	}
+
 }

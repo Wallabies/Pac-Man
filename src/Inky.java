@@ -3,4 +3,7 @@
  */
 public class Inky extends Ghost {
 
+	public Inky(double ex, double why) {
+		super(1, ex, why);
+	}
 }

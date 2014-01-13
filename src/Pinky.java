@@ -3,4 +3,7 @@
  */
 public class Pinky extends Ghost {
 
+	public Pinky(double ex, double why) {
+		super(2, ex, why);
+	}
 }
