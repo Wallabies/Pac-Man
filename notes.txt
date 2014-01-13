@@ -1,4 +1,4 @@
-Notes for your convenience:
+Notes for your convenience!
 
 Data Types:
 	0  - Empty, completely blank, not important, just a place holder
