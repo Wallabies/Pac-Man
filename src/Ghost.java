@@ -1,4 +1,8 @@
 import org.newdawn.slick.opengl.Texture;
+import org.newdawn.slick.opengl.TextureLoader;
+import org.newdawn.slick.util.ResourceLoader;
+
+import java.io.IOException;
 
 /**
  * Created by Peter on 1/2/14.
@@ -13,8 +17,17 @@ public class Ghost {
 
 	private static Texture texture;
 
-	public Ghost() {
-
+	public Ghost(int gn, double ex, double why) {
+		ghostNumber = gn;
+		x = ex;
+		y = why;
+		eyeState = 0;
+		bodyState = 0;
+		try {
+			texture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("pics/Character_Models.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void display() {

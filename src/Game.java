@@ -27,9 +27,10 @@ public class Game {
 	 * Display the game to the screen
 	 */
 	public void display() {
-		board.display();
 		int[] nums = board.getCoordinatesAt(Board.snapScreenPointToBoardX(Mouse.getX()), Board.snapScreenPointToBoardY(Mouse.getY()), 0, Board.FACE_UP);
 		board.drawBoxAt(nums[0], nums[1]);
+		board.display();
+
 	}
 
 }

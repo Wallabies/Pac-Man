@@ -89,20 +89,20 @@ public class Board {
 				//one of the letters or special characters
 				if (board[ex][why] > 20)
 					displayTexture(1, board[ex][why], ex, why, 0);
-				//2 blocks surrounding
-				else if (getSurroundingBlockNumber(ex, why) == 2) {
+				//2 tiles surrounding
+				else if (getSurroundingTileNumber(ex, why) == 2) {
 					if (board[ex][why] == 4)
 						displayTexture(3, 2, ex, why, getOpposite(getClosedCorner(ex, why)));
 					else
 						displayTexture(board[ex][why], 2, ex, why, getOpposite(getClosedCorner(ex, why)));
 				}
-				//3 blocks surrounding
-				else if (getSurroundingBlockNumber(ex, why) == 3) {
+				//3 tiles surrounding
+				else if (getSurroundingTileNumber(ex, why) == 3) {
 					displayTexture(board[ex][why], 1, ex, why, getOpenFace(ex, why));
 				}
 
-				//4 blocks surrounding
-				else if (getSurroundingBlockNumber(ex, why) == 4) {
+				//4 tiles surrounding
+				else if (getSurroundingTileNumber(ex, why) == 4) {
 					if (getOpenCorner(ex, why) != 4) {
 						if (board[ex][why] == 3) //because this one is weird
 							displayTexture(board[ex][why], 3, ex, why, getOpposite(getOpenCorner(ex, why)));
@@ -128,10 +128,10 @@ public class Board {
 	}
 
 	/**
-	 * Set the type of block at the given coordinates.
-	 * @param ex The x coordinate of the block to be changed
-	 * @param why The y coordinate of the block to be changed
-	 * @param type The type to set the block at the given coordinates
+	 * Set the type of tile at the given coordinates.
+	 * @param ex The x coordinate of the tile to be changed
+	 * @param why The y coordinate of the tile to be changed
+	 * @param type The type to set the tile at the given coordinates
 	 */
 	public void setTypeAt(int ex, int why, byte type) {
 		try {
@@ -160,10 +160,10 @@ public class Board {
 	}
 
 	/**
-	 * Gives whether or not the block at the given coordinates is solid (wall, door, or out of bounds).
-	 * @param ex The x coordinate of the block to be evaluated
-	 * @param why The y coordinate of the block to be evaluated
-	 * @return True if the block is solid, false if it is not
+	 * Gives whether or not the tile at the given coordinates is solid (wall, door, or out of bounds).
+	 * @param ex The x coordinate of the tile to be evaluated
+	 * @param why The y coordinate of the tile to be evaluated
+	 * @return True if the tile is solid, false if it is not
 	 */
 	public boolean isSolid(int ex, int why) {
 		try {
@@ -259,7 +259,7 @@ public class Board {
 					GL11.glTexCoord2d(0 + textureX, 0.125 + textureY);        GL11.glVertex2d(boardX - newApothem, boardY + newApothem);
 				GL11.glEnd();
 			GL11.glPopMatrix();
-			getSurroundingBlockNumber(0, 0);
+			getSurroundingTileNumber(0, 0);
 		}
 	}
 
@@ -275,12 +275,12 @@ public class Board {
 	}
 
 	/**
-	 * Gives the number of blocks surrounding the block at the given coordinates.
-	 * @param ex The x coordinate of the block to be evaluated
-	 * @param why The y coordinate of the block to be evaluated
-	 * @return The number of blocks surrounding the block at the given coordinates
+	 * Gives the number of tiles surrounding the tile at the given coordinates.
+	 * @param ex The x coordinate of the tile to be evaluated
+	 * @param why The y coordinate of the tile to be evaluated
+	 * @return The number of tiles surrounding the tile at the given coordinates
 	 */
-	private int getSurroundingBlockNumber(int ex, int why) {
+	private int getSurroundingTileNumber(int ex, int why) {
 		if (board[ex][why] < 3 || board[ex][why] == 6)
 			return 0;
 
@@ -306,10 +306,10 @@ public class Board {
 	}
 
 	/**
-	 * Gives the face of the given block that is not a solid block.
-	 * @param ex The x coordinate of the block to be evaluated
-	 * @param why The y coordinate of the block to be evaluated
-	 * @return The face of the given block that is open
+	 * Gives the face of the given tile that is not a solid tile.
+	 * @param ex The x coordinate of the tile to be evaluated
+	 * @param why The y coordinate of the tile to be evaluated
+	 * @return The face of the given tile that is open
 	 */
 	private int getOpenFace(int ex, int why) {
 		int num = 0;
@@ -334,10 +334,10 @@ public class Board {
 	}
 
 	/**
-	 * Gives the corner of the given block that is not a solid block.
-	 * @param ex The x coordinate of the block to be evaluated
-	 * @param why The y coordinate of the block to be evaluated
-	 * @return The corner of the given block that is open
+	 * Gives the corner of the given tile that is not a solid tile.
+	 * @param ex The x coordinate of the tile to be evaluated
+	 * @param why The y coordinate of the tile to be evaluated
+	 * @return The corner of the given tile that is open
 	 */
 	private int getOpenCorner(int ex, int why) {
 
@@ -361,10 +361,10 @@ public class Board {
 	}
 
 	/**
-	 * Gives the corner of the given block that is a solid block.
-	 * @param ex The x coordinate of the block to be evaluated
-	 * @param why The y coordinate of the block to be evaluated
-	 * @return The corner of the block that is not open
+	 * Gives the corner of the given tile that is a solid tile.
+	 * @param ex The x coordinate of the tile to be evaluated
+	 * @param why The y coordinate of the tile to be evaluated
+	 * @return The corner of the tile that is not open
 	 */
 	private int getClosedCorner(int ex,int why) {
 		//direction 0
@@ -387,11 +387,11 @@ public class Board {
 	}
 
 	/**
-	 * Checks if a block of a certain type is next to the block at the given coordinates.
-	 * @param ex The x coordinate of the block to be evaluated
-	 * @param why The y coordinate of the block to be evaluated
-	 * @param type The type of the block that is being checked for
-	 * @return If the given block is next to a block with the given type
+	 * Checks if a tile of a certain type is next to the tile at the given coordinates.
+	 * @param ex The x coordinate of the tile to be evaluated
+	 * @param why The y coordinate of the tile to be evaluated
+	 * @param type The type of the tile that is being checked for
+	 * @return If the given tile is next to a tile with the given type
 	 */
 	private boolean isNextTo(int ex, int why, int type) {
 
