@@ -14,15 +14,13 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Board {
 
-	private static final int WIDTH = 28;
-	private static final int HEIGHT = 31;
+	public static final int WIDTH = 28;
+	public static final int HEIGHT = 31;
 
 	public static final int FACE_UP = 0;
 	public static final int FACE_RIGHT = 1;
 	public static final int FACE_DOWN = 2;
 	public static final int FACE_LEFT = 3;
-
-	private static final double SCALE_FACTOR = (double)Start.WINDOW_HEIGHT / (HEIGHT * 8);
 
 	private byte[][] board;
 	private int apothem;
@@ -147,7 +145,7 @@ public class Board {
 	 * @return The parameter as if it was on the board
 	 */
 	public static int snapScreenPointToBoardX(double ex) {
-		return (int)(ex / SCALE_FACTOR / 8);
+		return (int)(ex / Game.SCALE_FACTOR / 8);
 	}
 
 	/**
@@ -197,9 +195,9 @@ public class Board {
 	 * @param why The y coordinate of the given point
 	 */
 	public void drawBoxAt(double ex, double why) {
-		double newApothem = apothem * SCALE_FACTOR;
-		ex = ex * 8 * SCALE_FACTOR + newApothem;
-		why = why * 8 * SCALE_FACTOR + newApothem;
+		double newApothem = apothem * Game.SCALE_FACTOR;
+		ex = ex * 8 * Game.SCALE_FACTOR + newApothem;
+		why = why * 8 * Game.SCALE_FACTOR + newApothem;
 
 		try {
 			GL11.glColor3d(1, 0, 0);
@@ -225,41 +223,15 @@ public class Board {
 	 */
 	private void displayTexture(double textureX, double textureY, double boardX, double boardY, int rotation) {
 		if(textureX != 0 && textureX != 7 && textureX != 8) {
-			double newApothem = apothem * SCALE_FACTOR;
-			boardX = boardX * 8 * SCALE_FACTOR + newApothem;
-			boardY = boardY * 8 * SCALE_FACTOR + newApothem;
-
-			if (textureY <= 8) {
-				textureX = (textureX - 1) / 8;
-				textureY = (textureY - 1) / 8;
+			switch ((int)textureY) {
+				case 82: textureY = 2; break;
+				case 69: textureY = 3; break;
+				case 65: textureY = 4; break;
+				case 68: textureY = 5; break;
+				case 89: textureY = 6; break;
+				case 33: textureY = 7; break;
 			}
-			else {
-				switch ((int)textureY) {
-					case 82: textureY = 2; break;
-					case 69: textureY = 3; break;
-					case 65: textureY = 4; break;
-					case 68: textureY = 5; break;
-					case 89: textureY = 6; break;
-					case 33: textureY = 7; break;
-				}
-				textureX = 0;
-				textureY = (textureY - 1) / 8;
-			}
-
-			Color.white.bind();
-			texture.bind();
-			GL11.glPushMatrix();
-				GL11.glTranslated(boardX, boardY, 0);
-				GL11.glRotated(rotation * 90, 0, 0, 1);
-				GL11.glTranslated(-boardX, -boardY, 0);
-				GL11.glBegin(GL11.GL_QUADS);
-					GL11.glTexCoord2d(0 + textureX, 0 + textureY);            GL11.glVertex2d(boardX - newApothem, boardY - newApothem);
-					GL11.glTexCoord2d(0.125 + textureX, 0 + textureY);        GL11.glVertex2d(boardX + newApothem, boardY - newApothem);
-					GL11.glTexCoord2d(0.125 + textureX, 0.125 + textureY);    GL11.glVertex2d(boardX + newApothem, boardY + newApothem);
-					GL11.glTexCoord2d(0 + textureX, 0.125 + textureY);        GL11.glVertex2d(boardX - newApothem, boardY + newApothem);
-				GL11.glEnd();
-			GL11.glPopMatrix();
-			getSurroundingTileNumber(0, 0);
+			Game.displayTexture(textureX, textureY, boardX, boardY, rotation, texture);
 		}
 	}
 

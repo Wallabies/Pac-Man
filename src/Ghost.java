@@ -1,3 +1,4 @@
+import org.lwjgl.input.Mouse;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -30,7 +31,18 @@ public class Ghost {
 		}
 	}
 
-	public void display() {
+	public void update() {
 
+	}
+
+	public void display() {
+		double ex = (Mouse.getX() / 8) / Game.SCALE_FACTOR;
+		double why = Board.HEIGHT - ((Mouse.getY() / 8) / Game.SCALE_FACTOR);
+
+		//draw face
+		Game.displayTexture(2 + ghostNumber, 1 + bodyState, ex, why, 0, texture);
+
+		//draw eyes
+		Game.displayTexture(2 + eyeState, 3, ex, why, 0, texture);
 	}
 }
