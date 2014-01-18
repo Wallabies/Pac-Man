@@ -7,7 +7,6 @@ import java.util.Scanner;
 import java.io.File;
 
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
@@ -95,9 +94,8 @@ public class Board {
 						displayTexture(board[ex][why], 2, ex, why, getOpposite(getClosedCorner(ex, why)));
 				}
 				//3 tiles surrounding
-				else if (getSurroundingTileNumber(ex, why) == 3) {
+				else if (getSurroundingTileNumber(ex, why) == 3)
 					displayTexture(board[ex][why], 1, ex, why, getOpenFace(ex, why));
-				}
 
 				//4 tiles surrounding
 				else if (getSurroundingTileNumber(ex, why) == 4) {

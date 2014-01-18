@@ -39,7 +39,6 @@ public class Game {
 		//board.drawBoxAt(nums[0], nums[1]);
 		board.display();
 		ghost.display();
-
 	}
 
 	public static void displayTexture(double textureX, double textureY, double boardX, double boardY, int rotation, Texture texture) {
