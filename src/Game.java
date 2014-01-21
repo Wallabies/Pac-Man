@@ -13,6 +13,7 @@ public class Game {
 
 	Board board;
 	Ghost ghost;
+	PacMan pacMan;
 
 	/**
 	 * Create a new Game
@@ -21,6 +22,7 @@ public class Game {
 		board = new Board();
 		board.readBoardFromFile();
 		ghost = new Ghost(0, 0, 0);
+		pacMan = new PacMan(0, 0);
 	}
 
 	/**
@@ -39,6 +41,7 @@ public class Game {
 		//board.drawBoxAt(nums[0], nums[1]);
 		board.display();
 		ghost.display();
+		pacMan.display();
 	}
 
 	public static void displayTexture(double textureX, double textureY, double boardX, double boardY, int rotation, Texture texture) {
